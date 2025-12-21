@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <title>Animation CSS</title>
+  </head>
+  <body>
+    <audio id="birthdayMusic" loop>
+      <source src="./music/music.mp3" type="audio/mpeg">
+    </audio>
+    <div id="overlay">
+      <div class="overlay-content">
+          <h2>Aku punya sesuatu buat kamu</h2>
+          <button id="startBtn">cepet pencet tombol love nyaaa 👉 <span class="heart-icon">❤️</span></button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="cover">
+        <div class="cover-front">
+          <img src="./images/cover.jpg" alt="Foto Pertama Kita">
+          <div class="cover-content">
+            <h1>A Year of Us</h1>
+            <p>Together with you 😊</p>
+          </div>
+        </div>
+
+        <div class="cover-back">
+          <img src="./images/back.jpg" alt="">
+          <div class="cover-back-content">
+            <h2>Since Day One</h2> <p>Every moment with you is a gift.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="page page-1">
+        <div class="page-front">
+          <p id="typing-text" data-text="Selamat ulang tahun, Sayang!! 🎂🎉 \n dengan bertambahnya umur kamu semoga kedepannya kamu menjadi pribadi yang lebih baik lagi, sayang sama keluarga dan lebih sayang sama aku juga hihi.. 🫶🏻 \n dan semoga untuk harapan kamu kedepannya bisa tercapai, jangan banyak ngeluh dan ambekan wae ya sayang, selalu dengerin tu kata orang tua, apalagi kalo jajan sembarangan suka lupa sama kesehatan \n pokoknya selalu jaga kesehatan terus ya 💪🏻💪🏻, kalo di kasih tau tu dengerinn makanya 😌 --> ">
+          </p>
+        </div>
+        <div class="page-back">
+          <video id="memoryVideo" loop muted playsinline>
+            <source src="./music/slide.mp4" type="video/mp4">
+            Browser kamu tidak mendukung tag video.
+          </video>
+          <!-- <img src="./images/page1-back.jpg" alt=""> -->
+        </div>
+      </div>
+      
+      <div class="page page-2">
+        <div class="page-front">
+          <p id="typing-text-2" data-text="Nggak terasa ya, udah lebih dari 487 hari kita jalanin ini bersama 🫶🏻. \n Kamu ingat kan foto pertama kita yang ada di sampul depan buku ini. itu adalah hari dimana perjalanan kita bersama dimulai. 🥰🥰 \n Maaf ya kalo selama ini aku masih banyak kurangnya dan masih jauh dari ekspektasi kamu. Aku harap kita masih bisa terus melewatinya sama-sama. \n Terima kasih juga sudah tetap di sini menemani aku membangun hubungan kita dengan banyak tawa, senang dan juga drama-drama kecil kita 😘. Love U Pull Sayangku ❤️❤️"></p>
+        </div>
+      </div>
+    </div>
+    <script>
+      const card = document.querySelector('.card');
+      const music = document.getElementById('birthdayMusic');
+      const text1 = document.getElementById('typing-text');
+      const text2 = document.getElementById('typing-text-2');
+      const video = document.getElementById('memoryVideo');
+      let state = 0;
+      let typingStarted1 = false;
+      let typingStarted2 = false;
+
+      card.addEventListener('click', (e) => {
+        const rect = card.getBoundingClientRect();
+        const isLeft = (e.clientX - rect.left) < rect.width / 2;
+
+        if (state === 0) {
+          card.classList.add('open');
+          state = 1;
+
+          music.play().then(() => {
+          console.log("Musik diputar!");
+          }).catch(error => {
+              console.log("Gagal putar musik: ", error);
+          });
+          music.play().catch(error => console.log("User must interact first"));
+
+          confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#ff69b4', '#ffd700', '#ffffff']
+          });
+
+          if (video) {
+            video.play();
+          }
+          
+          if (!typingStarted1 && text1) {
+            typingStarted1 = true;
+            setTimeout(() => { startTyping(text1); }, 800);
+          }
+        } 
+        else if (state === 1) {
+          card.classList.add('page-open');
+          state = 2;
+
+          if (!typingStarted2 && text2) {
+            typingStarted2 = true;
+            setTimeout(() => { startTyping(text2); }, 800);
+          }
+        } 
+        else {
+          if (isLeft) {
+            card.classList.remove('page-open');
+            state = 1;
+          } else {
+            card.classList.remove('open', 'page-open');
+            state = 0;
+            typingStarted1 = false;
+            typingStarted2 = false;
+            // music.pause(); 
+            // music.currentTime = 0;
+          }
+        }
+      });
+
+      function createHeart() {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.innerHTML = '❤️'; // Karakter hati
+        
+        // Posisi horizontal acak
+        heart.style.left = Math.random() * 100 + "vw";
+        
+        // Ukuran acak
+        const size = Math.random() * 20 + 10 + "px";
+        heart.style.fontSize = size;
+        
+        // Durasi jatuh acak (antara 3 - 6 detik)
+        const duration = Math.random() * 3 + 3;
+        heart.style.animationDuration = duration + "s";
+        
+        // Transparansi acak
+        heart.style.opacity = Math.random();
+
+        document.body.appendChild(heart);
+
+        // Hapus elemen setelah animasi selesai agar tidak memberatkan browser
+        setTimeout(() => {
+          heart.remove();
+        }, duration * 1000);
+      }
+
+      setInterval(createHeart, 300);
+
+      document.getElementById('startBtn').addEventListener('click', function() {
+        music.play().then(() => {
+            music.pause();
+            music.currentTime = 0;
+        });
+
+        const overlay = document.getElementById('overlay');
+        overlay.style.transition = "opacity 0.8s ease";
+        overlay.style.opacity = "0";
+        
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 800);
+      });
+
+      function startTyping(element) {
+        const fullText = element.getAttribute('data-text');
+        if (!fullText) return;
+
+        let charIndex = 0;
+        element.innerHTML = ""; 
+
+        function type() {
+          if (charIndex < fullText.length) {
+            let char = fullText.charAt(charIndex);
+            
+            if (char === "\\" && fullText.charAt(charIndex + 1) === "n") {
+              element.innerHTML += "<br>";
+              charIndex += 2;
+            } else {
+              element.innerHTML += char;
+              charIndex++;
+            }
+            setTimeout(type, 40); // Sedikit lebih cepat (40ms) agar tidak bosan menunggu
+          }
+        }
+        type();
+      }
+    </script>
+  </body>
+</html>
